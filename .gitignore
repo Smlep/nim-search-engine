@@ -1,9 +1,13 @@
 nimcache/
 nimblecache/
 htmldocs/
+*.out
 
 # Saved indexes
 *.index
 
 # Vscode
 *.code-workspace
+
+# Generated binary
+search_engine
