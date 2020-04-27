@@ -14,7 +14,6 @@ proc search*(index: Index, word: string) : seq[string] =
                 break
 
 proc searchAllOf*(index: Index, words: seq[string]) : seq[string] =
-    
     var searches : seq[HashSet[string]]
     for word in words:
         searches.add(toHashSet(index.search(word)))
@@ -25,7 +24,6 @@ proc searchAllOf*(index: Index, words: seq[string]) : seq[string] =
     result = setResult.toSeq()
 
 proc searchOneOf*(index: Index, words: seq[string]) : seq[string] =
-    
     var searches : HashSet[string]
     for word in words:
         searches.incl(toHashSet(index.search(word)))

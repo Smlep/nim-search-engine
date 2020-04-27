@@ -1,3 +1,5 @@
+import marshal
+import os
 import sets
 import streams
 import tables
@@ -42,9 +44,10 @@ proc buildReversedIndex*(postings: seq[Posting]): Index =
             result.wordToDids[posting.word].add(result.urlToDid[url])
 
 proc save*(index: Index, path: string) =
-    var saveStream = newFileStream(path, fmWrite)
-    saveStream.write(index)
-    saveStream.close()
+    writeFile(path, $$index)
     
 proc loadIndex*(path: string) : Index =
-    newFileStream(path, fmRead).read(result)
+    if not fileExists(path):
+        quit("File " & path & " does not exist")
+    var indexStr: string = readFile(path)
+    result = to[Index](indexStr)
