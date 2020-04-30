@@ -5,7 +5,6 @@ import parseopt
 import processing
 import search
 import sequtils
-import tables
 
 proc computeIndex(path: string, savePath: string) =
   let docs = fetch(path)

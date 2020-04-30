@@ -8,10 +8,7 @@ proc search*(index: Index, word: string) : seq[string] =
         return @[]
     var dids : seq[int] = index.wordToDids[word]
     for did in dids:
-        for key, value in index.urlToDid.pairs:
-            if value == did:
-                result.add(key)
-                break
+        result.add(index.didToUrl[did])
 
 proc searchAllOf*(index: Index, words: seq[string]) : seq[string] =
     var searches : seq[HashSet[string]]

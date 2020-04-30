@@ -12,7 +12,7 @@ type
         urls*: HashSet[string]
 
     Index* = object
-        urlToDid*: Table[string, int]
+        didToUrl*: seq[string]
         wordToDids*: Table[string, seq[int]]
 
 proc indexDocs*(documents: seq[TokenizedDocument]): seq[Posting] =
@@ -31,17 +31,15 @@ proc indexDocs*(documents: seq[TokenizedDocument]): seq[Posting] =
 
 proc buildReversedIndex*(postings: seq[Posting]): Index =
     result = Index()
-    var id = 0
     for posting in postings:
         for url in posting.urls:
-            if not (url in result.urlToDid):
-                result.urlToDid[url] = id
-                id += 1
+            if not (url in result.didToUrl):
+                result.didToUrl.add(url)
 
     for posting in postings:
         result.wordToDids[posting.word] = @[]
         for url in posting.urls:
-            result.wordToDids[posting.word].add(result.urlToDid[url])
+            result.wordToDids[posting.word].add(result.didToUrl.find(url))
 
 proc save*(index: Index, path: string) =
     writeFile(path, $$index)
