@@ -32,6 +32,9 @@ proc indexDocs*(documents: seq[TokenizedDocument]): seq[Posting] =
 proc buildReversedIndex*(postings: seq[Posting]): Index =
     result = Index()
 
+    # The most of indexing computation time is spent here
+    # This is the method which seems to give the fastest search,
+    # but indexing ends up being really slow
     for posting in postings:
         result.wordToDids[posting.word] = @[]
         for url in posting.urls:

@@ -3,6 +3,7 @@ import indexing
 import os
 import parseopt
 import processing
+import results
 import search
 import sequtils
 
@@ -19,14 +20,15 @@ proc computeIndex(path: string, savePath: string) =
 
   reversedIndex.save(savePath)
 
-proc loadAndSearch(indexPath: string, words: seq[string], allOf: bool) =
+proc loadAndSearch(indexPath: string, words: seq[string], allOf: bool): seq[string] =
 
   var loaded = loadIndex(indexPath)
   
   if allOf:
-    echo loaded.searchAllOf(words)
+    result = loaded.searchAllOf(words)
   else:
-    echo loaded.searchOneOf(words)
+    result = loaded.searchOneOf(words)
+
 
 
 proc usage() =
@@ -37,14 +39,19 @@ proc usage() =
   echo("To search words in the indexed files:")
   echo("search savePath word1 word2 word3")
   echo("search available options:")
-  quit("--all-of: searches files containing all words instead of one of the words")
+  echo("--all-of: searches files containing all words instead of one of the words")
+  quit("--one-line: display results one line separated with whitespaces, instead of newlines")
+
 
 proc main() =
   if paramCount() < 1:
     usage()
 
   var p = initOptParser()
+  # Should the research be an and
   var allOf = false
+  # Should all results be displayed on one line
+  var oneLine = false
   var arguments = newSeq[string]()
   while true:
     p.next()
@@ -54,6 +61,8 @@ proc main() =
       if p.val == "":
         if p.key == "all-of":
           allOf = true
+        if p.key == "one-line":
+          oneLine = true
       else:
         discard
     of cmdArgument:
@@ -71,6 +80,10 @@ proc main() =
   if arguments[0] == "search":
     if arguments.len < 3:
       usage()
-    loadAndSearch(arguments[1], arguments[2..^1], allOf)
+    var results = loadAndSearch(arguments[1], arguments[2..^1], allOf)
+    if oneLine:
+      oneLineDisplay(results)
+    else:
+      newlineDisplay(results)
 
 main()
