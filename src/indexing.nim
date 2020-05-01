@@ -31,15 +31,15 @@ proc indexDocs*(documents: seq[TokenizedDocument]): seq[Posting] =
 
 proc buildReversedIndex*(postings: seq[Posting]): Index =
     result = Index()
-    for posting in postings:
-        for url in posting.urls:
-            if not (url in result.didToUrl):
-                result.didToUrl.add(url)
 
     for posting in postings:
         result.wordToDids[posting.word] = @[]
         for url in posting.urls:
-            result.wordToDids[posting.word].add(result.didToUrl.find(url))
+            var pos = result.didToUrl.find(url)
+            if pos == -1:
+                result.didToUrl.add(url)
+                pos = result.didToUrl.len - 1
+            result.wordToDids[posting.word].add(pos)
 
 proc save*(index: Index, path: string) =
     writeFile(path, $$index)
