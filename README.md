@@ -62,3 +62,5 @@ tests/files/lorem
 ## Disclaimer
 
 This is beginner's nim code, feel free to open discussions about what wasn't done in a nice way, or what could be reformatted to fit nim's style.
+
+Evolution of performances can be found [here](benchmark.md).
