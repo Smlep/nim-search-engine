@@ -1,5 +1,5 @@
 # nim-search-engine
-A simple search engine for local files with indexing implementation in [nim](https://nim-lang.org/)
+A simple search engine for local files with indexing implementation in [nim](https://nim-lang.org/).
 
 This search engine works in two times, first you have to build an index, then search through the indexed files.
 
