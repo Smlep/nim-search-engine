@@ -53,7 +53,7 @@ tests/files/lorem
 ## Improvements
 
 - [ ] Incrementing indexing, handling of document generations
-- [ ] Metadata handling
+- [X] Metadata handling
 - [ ] Add and delete document to existing index
 - [ ] Words positions handling
 - [ ] Evaluate and improve performances
