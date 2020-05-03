@@ -57,7 +57,7 @@ tests/files/lorem
 - [ ] Add and delete document to existing index
 - [ ] Words positions handling
 - [ ] Evaluate and improve performances
-
+- [ ] Parallelize search to greatly improve performances
 
 ## Disclaimer
 
