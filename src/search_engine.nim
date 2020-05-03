@@ -7,7 +7,7 @@ import results
 import search
 import sequtils
 
-proc computeIndex(path: string, savePath: string) =
+proc computeIndex(path: string, savePath: string, addToIndex: string) =
   let docs = fetch(path)
   var processors: seq[TextProcessor] = @[]
   processors.add(Normalizer())
@@ -16,7 +16,13 @@ proc computeIndex(path: string, savePath: string) =
 
   var indexed = indexDocs(tokendocs)
 
-  var reversedIndex = buildReversedIndex(indexed)
+  var reversedIndex: Index
+
+  if addToIndex != "":
+    var oldIndex = loadIndex(addToIndex)
+    reversedIndex = oldIndex.buildReversedIndex(indexed)
+  else:
+    reversedIndex = buildReversedIndex(postings=indexed)
 
   reversedIndex.save(savePath)
 
@@ -36,6 +42,8 @@ proc usage() =
   echo("[mode]: {index, search}")
   echo("To index files, allowing faster searching:")
   echo("index filesPath savePath")
+  echo("indexing available options:")
+  echo("--add-to:filepath: add indexed files to an already existing index saved at filepath")
   echo("To search words in the indexed files:")
   echo("search savePath word1 word2 word3")
   echo("search available options:")
@@ -52,6 +60,8 @@ proc main() =
   var allOf = false
   # Should all results be displayed on one line
   var oneLine = false
+  # Should indexing be added to an existing file
+  var addToIndex = ""
   var arguments = newSeq[string]()
   while true:
     p.next()
@@ -64,7 +74,9 @@ proc main() =
         if p.key == "one-line":
           oneLine = true
       else:
-        discard
+        if p.key == "add-to":
+          addToIndex = p.val
+
     of cmdArgument:
       arguments.add(p.key)
 
@@ -75,7 +87,7 @@ proc main() =
   if arguments[0] == "index":
     if arguments.len < 3:
       usage()
-    computeIndex(arguments[1], arguments[2])
+    computeIndex(arguments[1], arguments[2], addToIndex)
 
   if arguments[0] == "search":
     if arguments.len < 3:

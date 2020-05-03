@@ -29,8 +29,8 @@ proc indexDocs*(documents: seq[TokenizedDocument]): seq[Posting] =
             if not found:
                 result.add(Posting(word: word, urls: toHashSet([document.url])))
 
-proc buildReversedIndex*(postings: seq[Posting]): Index =
-    result = Index()
+proc buildReversedIndex*(index: Index = Index(), postings: seq[Posting]): Index =
+    result = index
 
     # The most of indexing computation time is spent here
     # This is the method which seems to give the fastest search,
@@ -43,6 +43,7 @@ proc buildReversedIndex*(postings: seq[Posting]): Index =
                 result.didToUrl.add(url)
                 pos = result.didToUrl.len - 1
             result.wordToDids[posting.word].add(pos)
+
 
 proc save*(index: Index, path: string) =
     writeFile(path, $$index)
