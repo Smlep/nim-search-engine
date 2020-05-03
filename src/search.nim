@@ -1,27 +1,38 @@
 import indexing
-import sets
 import sequtils
 import tables
 
-proc search*(index: Index, word: string) : seq[string] = 
+type
+    FoundDocument* = object
+        url*: string
+        metadatas*: Table[string, string]
+
+proc intersection(documents: seq[FoundDocument], other: seq[FoundDocument]): seq[FoundDocument] =
+    var otherUrls = other.map(proc(fd: FoundDocument): string= fd.url)
+    for document in documents:
+        if document.url in otherUrls:
+            result.add(document)
+
+proc contains(documents: seq[FoundDocument], document: FoundDocument): bool =
+    result = document.url in documents.map(proc(fd: FoundDocument): string= fd.url)
+
+proc union(documents: seq[FoundDocument], other: seq[FoundDocument]): seq[FoundDocument] =
+    result = documents
+    for document in other:
+        if not (document in result):
+            result.add(document)
+
+proc search*(index: Index, word: string): seq[FoundDocument] = 
     if not index.wordToDids.hasKey(word):
         return @[]
     var dids : seq[int] = index.wordToDids[word]
     for did in dids:
-        result.add(index.didToUrl[did])
+        result.add(FoundDocument(url: index.didToUrl[did], metadatas: index.didToMetadatas[did]))
 
-proc searchAllOf*(index: Index, words: seq[string]) : seq[string] =
-    var searches : seq[HashSet[string]]
+proc searchAllOf*(index: Index, words: seq[string]): seq[FoundDocument] =
     for word in words:
-        searches.add(toHashSet(index.search(word)))
+        result = result.intersection(index.search(word))
 
-    var setResult = searches[0]
-    for search in searches[1..^1]:
-        setResult = setResult.intersection(search)
-    result = setResult.toSeq()
-
-proc searchOneOf*(index: Index, words: seq[string]) : seq[string] =
-    var searches : HashSet[string]
+proc searchOneOf*(index: Index, words: seq[string]): seq[FoundDocument] =
     for word in words:
-        searches.incl(toHashSet(index.search(word)))
-    result = searches.toSeq()
+        result = result.union(index.search(word))

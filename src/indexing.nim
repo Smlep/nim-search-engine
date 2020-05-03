@@ -13,6 +13,7 @@ type
 
     Index* = object
         didToUrl*: seq[string]
+        didToMetadatas*: seq[Table[string, string]]
         wordToDids*: Table[string, seq[int]]
 
 proc indexDocs*(documents: seq[TokenizedDocument]): seq[Posting] =
@@ -29,7 +30,7 @@ proc indexDocs*(documents: seq[TokenizedDocument]): seq[Posting] =
             if not found:
                 result.add(Posting(word: word, urls: toHashSet([document.url])))
 
-proc buildReversedIndex*(index: Index = Index(), postings: seq[Posting]): Index =
+proc buildReversedIndex*(index: Index = Index(), postings: seq[Posting], metadatas: Table[string, Table[string, string]]): Index =
     result = index
 
     # The most of indexing computation time is spent here
@@ -41,6 +42,7 @@ proc buildReversedIndex*(index: Index = Index(), postings: seq[Posting]): Index 
             var pos = result.didToUrl.find(url)
             if pos == -1:
                 result.didToUrl.add(url)
+                result.didToMetadatas.add(metadatas[url])
                 pos = result.didToUrl.len - 1
             result.wordToDids[posting.word].add(pos)
 

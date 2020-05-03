@@ -1,5 +1,6 @@
 import connectors
 import strutils
+import tables
 import unicode
 import unidecode
 
@@ -11,6 +12,7 @@ type
     TokenizedDocument* = object
         words*: seq[string]
         url*: string
+        metadatas*: Table[string, string]
 
 # watch out: 'eval' relies on dynamic binding
 method process(t: TextProcessor, word: string): string {.base.} =
@@ -30,4 +32,10 @@ proc analyze*(document: Document, textProcessors: seq[TextProcessor]): Tokenized
             processedWord = textProcessor.process(processedWord)
         words.add(processedWord)
 
-    result = TokenizedDocument(words: words, url: document.url)
+    var metadatas = document.metadatas
+    metadatas["word_count"] = $len(words)
+    result = TokenizedDocument(words: words, url: document.url, metadatas: metadatas)
+
+proc collectMetadatas*(tokenizedDocuments: seq[TokenizedDocument]): Table[string, Table[string, string]] =
+    for td in tokenizedDocuments:
+        result[td.url] = td.metadatas
