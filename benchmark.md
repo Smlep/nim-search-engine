@@ -12,6 +12,8 @@ See [README](https://github.com/Smlep/nim-search-engine/blob/3665f0dd60f355a06f9
 
 Indexing time: 3407,48s user 8,53s system 99% cpu 57:07,22 total
 
+Index file size: 109M
+
 Search time:
 - president: 2,78s user 0,22s system 97% cpu 3,072 total
 - bleu: 2,78s user 0,21s system 99% cpu 2,994 total
